@@ -1,14 +1,13 @@
 import nodemailer from 'nodemailer';
 import type { Transporter } from 'nodemailer';
-import { opt } from './env';
-import { config } from './config';
+import { need, opt } from './env';
 
 let transporter: Transporter | null = null;
 function getTransporter(): Transporter {
   if (!transporter) {
     transporter = nodemailer.createTransport({
       service: 'gmail',
-      auth: { user: config.gmail, pass: config.appPassword },
+      auth: { user: need('GMAIL_USER'), pass: need('GMAIL_APP_PASSWORD') },
     });
   }
   return transporter;
@@ -55,7 +54,7 @@ export function otpEmailHtml(code: string, appUrl: string): string {
 }
 
 export async function sendOtpMail(to: string, code: string): Promise<void> {
-  const from = opt('OTP_FROM') || `R1ZCHATID <${config.gmail}>`;
+  const from = opt('OTP_FROM') || `R1ZCHATID <${need('GMAIL_USER')}>`;
   await getTransporter().sendMail({
     from,
     to,
